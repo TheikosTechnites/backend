@@ -59,6 +59,9 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: build-artifacts
+          
+      - name: Install ESLint
+        run: npm install eslint --save-dev
 
       - name: Run lint
         run: npm run lint
