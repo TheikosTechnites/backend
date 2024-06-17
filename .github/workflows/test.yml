@@ -6,6 +6,8 @@ on:
       - main
       - prod
   pull_request:
+    types:
+      - opened
     branches:
       - main
       - prod
