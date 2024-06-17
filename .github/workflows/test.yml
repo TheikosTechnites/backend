@@ -40,7 +40,6 @@ jobs:
             package.json
             yarn.lock
 
-
   test:
     needs: build
     runs-on: ubuntu-latest
@@ -58,6 +57,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: build-artifacts
+          path: ./build
 
       - name: Run tests
         run: npm test
@@ -76,6 +76,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: build-artifacts
+          path: ./build
 
       - name: Deploy
         run: |
