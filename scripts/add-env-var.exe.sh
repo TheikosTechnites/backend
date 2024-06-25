@@ -1,55 +1,65 @@
 #!/bin/bash
 
-# Function to validate if the variable name is in uppercase letters
-validate_variable_name() {
-    local var_name="$1"
-    if [[ ! "$var_name" =~ ^[A-Z_]+$ ]]; then
-        echo "Error: Variable name must be in capital letters or underscores only."
-        exit 1
-    fi
-}
-
-# Check if exactly one argument is passed
-if [ $# -ne 1 ]; then
+# Check if the correct number of arguments is provided
+if [ "$#" -ne 1 ]; then
     echo "Usage: $0 <VARIABLE_NAME>"
     exit 1
 fi
 
-variable_name="$1"
+# Get the variable name
+VARIABLE_NAME=$1
 
-# Validate variable name
-validate_variable_name "$variable_name"
+# Validate that the variable name is uppercase letters only
+if [[ ! $VARIABLE_NAME =~ ^[A-Z_]+$ ]]; then
+    echo "Error: Variable name must be uppercase letters only."
+    exit 1
+fi
 
-# Files to update
-index_env_file="src/config/index.env.ts"
-env_example_file=".env.example"
-env_file="src/config/.env"
+# Define the paths
+ENV_FILE=".env"
+ENV_EXAMPLE_FILE=".env.example"
+INDEX_ENV_FILE="src/config/index.env.ts"
 
-# Function to add variable to a file
-add_variable_to_file() {
-    local var_name="$1"
-    local file="$2"
-    local default_value="$3"
-    
-    # Check if variable already exists in the file
-    if grep -qE "^${var_name}=" "$file"; then
-        echo "Variable '${var_name}' already exists in $file."
-    else
-        echo "${var_name}=${default_value}" >> "$file"
-        echo "Added '${var_name}' to $file."
+# Function to add variable to .env if it does not already exist
+add_variable_to_env_file() {
+    local file=$1
+    local variable=$2
+    if ! grep -q "^${variable}=" "$file"; then
+        echo -e "\n${variable}=\"\"" >> "$file"
     fi
 }
 
+# Function to add variable to .env.example if it does not already exist
+add_variable_to_env_example_file() {
+    local file=$1
+    local variable=$2
+    if ! grep -q "^${variable}$" "$file"; then
+        echo -e "\n${variable}" >> "$file"
+    fi
+}
+
+# Update .env file
+add_variable_to_env_file $ENV_FILE $VARIABLE_NAME
+
+# Update .env.example file
+add_variable_to_env_example_file $ENV_EXAMPLE_FILE $VARIABLE_NAME
+
 # Update index.env.ts
-if ! grep -qE "^const ${variable_name} =" "$index_env_file"; then
-    echo "const ${variable_name} = '';" >> "$index_env_file"
-    echo "Added 'const ${variable_name} = '';' to $index_env_file."
-else
-    echo "Variable '${variable_name}' already exists in $index_env_file."
+if ! grep -q "const ${VARIABLE_NAME} =" $INDEX_ENV_FILE; then
+    # Insert the new variable assignment after dotenv.config();
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        sed -i '' "/dotenv.config();/a\\
+const ${VARIABLE_NAME} = process.env.${VARIABLE_NAME} === '';" $INDEX_ENV_FILE
+    else
+        sed -i "/dotenv.config();/a const ${VARIABLE_NAME} = process.env.${VARIABLE_NAME} === '';" $INDEX_ENV_FILE
+    fi
+
+    # Add the new variable to the export statement
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        sed -i '' "s/export { ENABLE_BUYBACK_V2 };/export { ENABLE_BUYBACK_V2, ${VARIABLE_NAME} };/g" $INDEX_ENV_FILE
+    else
+        sed -i "s/export { ENABLE_BUYBACK_V2 };/export { ENABLE_BUYBACK_V2, ${VARIABLE_NAME} };/g" $INDEX_ENV_FILE
+    fi
 fi
 
-# Update .env.example
-add_variable_to_file "$variable_name" "$env_example_file" "example_value"
-
-# Update .env
-add_variable_to_file "$variable_name" "$env_file" "production_value"
+echo "Environment variable ${VARIABLE_NAME} added successfully."
