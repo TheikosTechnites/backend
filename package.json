@@ -18,7 +18,10 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "create-module": "bash scripts/create-module.sh"
+    "create-module": "bash scripts/create-module.exe.sh",
+    "create-env": "bash scripts/create-env.exe.sh",
+    "init-repository": "bash scripts/init-repository.exe.sh",
+    "preinstall": "chmod +x scripts/*.exe.sh"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
