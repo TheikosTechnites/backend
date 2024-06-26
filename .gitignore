@@ -60,3 +60,6 @@ tsconfig.build.tsbuildinfo
 
 # Ignore .env
 /src/config/.env
+
+# Ignore graphql schema
+/src/schema.gql
