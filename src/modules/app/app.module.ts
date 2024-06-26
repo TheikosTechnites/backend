@@ -5,15 +5,28 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PolicyModule } from '../policy/policy.module';
-import { MONGODB_URI } from 'src/config/index.env';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { join } from 'path';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(MONGODB_URI),
+    ConfigModule.forRoot({
+      envFilePath: 'src/config/.env',
+    }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       playground: true,
-      autoSchemaFile: true,
+      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+    }),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGODB_URI'),
+        maxIdleTimeMS: 120000,
+        maxPoolSize: 10,
+        minPoolSize: 5,
+      }),
+      inject: [ConfigService],
     }),
     PolicyModule,
   ],

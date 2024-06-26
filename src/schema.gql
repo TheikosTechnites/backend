@@ -1,0 +1,29 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type PolicyOutput {
+  title: String!
+  description: String
+  policyType: PolicyEnum!
+}
+
+"""Policy Enum"""
+enum PolicyEnum {
+  PRIVACY_POLICY
+  TERMS_AND_CONDITIONS
+}
+
+type Query {
+  getPrivacyPolicy: PolicyOutput!
+}
+
+type Mutation {
+  createPolicy(input: CreatePolicyInput!): PolicyOutput!
+}
+
+input CreatePolicyInput {
+  policyType: PolicyEnum!
+  title: String!
+  description: String!
+}
