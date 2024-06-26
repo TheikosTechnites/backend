@@ -24,10 +24,17 @@
     "init-repository": "bash scripts/init-repository.exe.sh"
   },
   "dependencies": {
+    "@apollo/server": "^4.10.4",
+    "@nestjs/apollo": "^12.1.0",
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
+    "@nestjs/graphql": "^12.1.1",
+    "@nestjs/mongoose": "^10.0.6",
     "@nestjs/platform-express": "^10.0.0",
+    "class-validator": "^0.14.1",
     "dotenv": "^16.4.5",
+    "graphql": "^16.9.0",
+    "mongoose": "^8.4.4",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1"
   },
