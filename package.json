@@ -21,8 +21,7 @@
     "create-module": "bash scripts/create-module.exe.sh",
     "create-env": "bash scripts/create-env.exe.sh",
     "add-env-var": "bash scripts/add-env-var.exe.sh",
-    "init-repository": "bash scripts/init-repository.exe.sh",
-    "preinstall": "chmod +x scripts/*.exe.sh"
+    "init-repository": "bash scripts/init-repository.exe.sh"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
