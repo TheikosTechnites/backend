@@ -125,6 +125,9 @@ jobs:
           
           # List SSH keys to verify it's added correctly
           ssh-add -L
+
+          # Write the environment file contents to a file
+          echo "${{ secrets.DEV_ENV_FILE }}" > $HOME/.env
           
           # Execute SSH command to deploy
           ssh -o StrictHostKeyChecking=no -i $HOME/decoded_ssh_key ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} << EOF
@@ -132,6 +135,6 @@ jobs:
             docker pull registry.digitalocean.com/nomadiq/my-app:latest
             docker stop my-app || true
             docker rm my-app || true
-            docker run -d --name my-app -p 8080:3000 registry.digitalocean.com/nomadiq/my-app:latest
+            docker run -d --name my-app -p 8080:3000 --env-file $HOME/.env registry.digitalocean.com/nomadiq/my-app:latest
           EOF
         shell: bash
