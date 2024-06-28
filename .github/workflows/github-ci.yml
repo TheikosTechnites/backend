@@ -17,7 +17,7 @@ on:
       deploy_now:
         description: 'Deploy Now (set to true to deploy)'
         required: true
-        default: 'false'
+        default: 'true'
 
 jobs:
   build:
