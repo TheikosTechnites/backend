@@ -89,6 +89,7 @@ jobs:
 
   deploy:
     # if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
     needs: [build, lint, test]
     runs-on: ubuntu-latest
     steps:
