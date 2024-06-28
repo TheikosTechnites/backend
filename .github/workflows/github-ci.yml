@@ -104,7 +104,7 @@ jobs:
           eval $(ssh-agent -s)
           
           # Add the SSH key to the agent
-          echo "${{ secrets.DROPLET_SSH_KEY }}" | base64 --decode > $HOME/decoded_ssh_key
+          echo "${{ secrets.SSH_JOHN_NEIL }}" | base64 --decode > $HOME/decoded_ssh_key
           chmod 600 $HOME/decoded_ssh_key
           ssh-add $HOME/decoded_ssh_key
           
