@@ -12,6 +12,12 @@ on:
     branches:
       - main
       - prod
+  workflow_dispatch:
+    inputs:
+      deploy_now:
+        description: 'Deploy Now (set to true to deploy)'
+        required: true
+        default: 'false'
 
 jobs:
   build:
@@ -75,6 +81,8 @@ jobs:
         run: npm test
 
   deploy:
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_now == 'true' }}
+    needs: [build, lint, test]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -112,7 +120,7 @@ jobs:
           ssh-add -L
           
           # Execute SSH command to deploy
-          ssh -vvv -o StrictHostKeyChecking=no -i $HOME/decoded_ssh_key ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} << EOF
+          ssh -o StrictHostKeyChecking=no -i $HOME/decoded_ssh_key ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} << EOF
             docker login registry.digitalocean.com -u ${{ secrets.DIGITALOCEAN_REGISTRY_USERNAME }} --password-stdin <<< ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
             docker pull registry.digitalocean.com/nomadiq/my-app:latest
             docker stop my-app || true
