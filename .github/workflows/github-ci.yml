@@ -29,11 +29,6 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '17.8.0'
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
           node-version: '18.16.1'
 
       - name: Install dependencies
@@ -62,7 +57,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '17.8.0'
+          node-version: '18.16.1'
 
       - name: Download build artifact
         uses: actions/download-artifact@v3
