@@ -89,7 +89,6 @@ jobs:
 
   deploy:
     # if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    
     needs: [build, lint, test]
     runs-on: ubuntu-latest
     steps:
@@ -126,6 +125,9 @@ jobs:
           
           # List SSH keys to verify it's added correctly
           ssh-add -L
+
+          # Create the directory on the remote server
+          ssh -o StrictHostKeyChecking=no -i $HOME/decoded_ssh_key ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} "mkdir -p /home/nomadiq"
 
           # Write the environment file contents to a file
           echo "${{ secrets.DEV_ENV_FILE }}" > $HOME/.env
