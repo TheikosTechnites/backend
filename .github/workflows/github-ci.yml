@@ -80,7 +80,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Docker Buildx
+      - name: Set up Docker Build
         uses: docker/setup-buildx-action@v1
 
       - name: Login to DigitalOcean Container Registry
@@ -89,6 +89,8 @@ jobs:
           registry: registry.digitalocean.com
           username: ${{ env.DIGITALOCEAN_REGISTRY_USERNAME }}
           password: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+          run: |
+            echo ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} | docker login registry.digitalocean.com -u ${{ env.DIGITALOCEAN_REGISTRY_USERNAME }} --password-stdin
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
