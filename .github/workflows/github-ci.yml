@@ -87,7 +87,7 @@ jobs:
         uses: docker/login-action@v1
         with:
           registry: registry.digitalocean.com
-          username: ${{ env.DIGITALOCEAN_REGISTRY_USERNAME }}
+          username: ${{ secrets.DIGITALOCEAN_REGISTRY_USERNAME }}  # Assuming this is a secret
           password: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
       - name: Build and push Docker image
@@ -101,12 +101,12 @@ jobs:
       - name: Deploy to Droplet
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ env.DROPLET_HOST }}
-          username: ${{ env.DROPLET_USERNAME }}
+          host: ${{ secrets.DROPLET_HOST }}  # Assuming this is a secret
+          username: ${{ secrets.DROPLET_USERNAME }}  # Assuming this is a secret
           key: ${{ secrets.DROPLET_SSH_KEY }}
           script: |
-            echo "Logging in as: ${{ env.DIGITALOCEAN_REGISTRY_USERNAME }}"
-            docker login registry.digitalocean.com -u ${{ env.DIGITALOCEAN_REGISTRY_USERNAME }} --password-stdin <<< ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+            echo "Logging in as: ${{ secrets.DIGITALOCEAN_REGISTRY_USERNAME }}"  # Assuming this is a secret
+            docker login registry.digitalocean.com -u ${{ secrets.DIGITALOCEAN_REGISTRY_USERNAME }} --password-stdin <<< ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
             docker pull registry.digitalocean.com/my-container-registry/my-app:latest
             docker stop my-app || true
             docker rm my-app || true
