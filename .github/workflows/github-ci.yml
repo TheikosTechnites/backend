@@ -105,6 +105,10 @@ jobs:
           eval $(ssh-agent -s)
           ssh-add $HOME/decoded_ssh_key
         shell: bash
+      
+      - name: List SSH keys in agent
+        run: ssh-add -L
+        shell: bash
 
       - name: Deploy to Droplet
         run: |
