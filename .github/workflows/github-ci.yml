@@ -98,11 +98,15 @@ jobs:
           push: true
           tags: registry.digitalocean.com/nomadiq/my-app:latest
 
+      - name: Decode SSH Key
+        run: echo "${{ secrets.ENCODED_DROPLET_SSH_KEY }}" | base64 --decode > $HOME/decoded_ssh_key
+        shell: bash
+
       - name: Deploy to Droplet
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.DROPLET_HOST }}  # Assuming this is a secret
-          username: ${{ secrets.DROPLET_USERNAME }}  # Assuming this is a secret
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USERNAME }}
           key: ${{ secrets.DROPLET_SSH_KEY }}
           script: |
             docker login registry.digitalocean.com -u ${{ secrets.DIGITALOCEAN_REGISTRY_USERNAME }} --password-stdin <<< ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
