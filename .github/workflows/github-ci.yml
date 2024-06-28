@@ -89,8 +89,8 @@ jobs:
           registry: registry.digitalocean.com
           username: ${{ env.DIGITALOCEAN_REGISTRY_USERNAME }}
           password: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-          run: |
-            echo ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }} | docker login registry.digitalocean.com -u ${{ env.DIGITALOCEAN_REGISTRY_USERNAME }} --password-stdin
+          script: |
+            docker login registry.digitalocean.com -u ${{ env.DIGITALOCEAN_REGISTRY_USERNAME }} --password-stdin <<< ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
