@@ -101,8 +101,7 @@ jobs:
       
       - name: Deploy to Droplet
         uses: appleboy/ssh-action@master
-        with:
-          run: |
+        run: |
           echo "Deploying to ..."
           # Start the SSH agent and export environment variables
           eval $(ssh-agent -s)
