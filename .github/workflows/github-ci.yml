@@ -100,7 +100,7 @@ jobs:
 
       - name: Decode SSH Key
         run: |
-          echo "${{ secrets.ENCODED_DROPLET_SSH_KEY }}" | base64 --decode > $HOME/decoded_ssh_key
+          echo "${{ secrets.DROPLET_SSH_KEY }}" | base64 --decode > $HOME/decoded_ssh_key
           chmod 600 $HOME/decoded_ssh_key
           eval $(ssh-agent -s)
           ssh-add $HOME/decoded_ssh_key
