@@ -98,11 +98,8 @@ jobs:
           push: true
           tags: registry.digitalocean.com/nomadiq/my-app:latest
 
-      
-      - name: Deploy to Droplet
-        uses: appleboy/ssh-action@master
+      - name: Decode SSH Key and Deploy to Droplet
         run: |
-          echo "Deploying to ..."
           # Start the SSH agent and export environment variables
           eval $(ssh-agent -s)
           
@@ -123,25 +120,3 @@ jobs:
             docker run -d --name my-app -p 80:80 registry.digitalocean.com/nomadiq/my-app:latest
           EOF
         shell: bash
-      # - name: Decode SSH Key and Deploy to Droplet
-      #   run: |
-      #     # Start the SSH agent and export environment variables
-      #     eval $(ssh-agent -s)
-          
-      #     # Add the SSH key to the agent
-      #     echo "${{ secrets.SSH_JOHN_NEIL }}" | base64 --decode > $HOME/decoded_ssh_key
-      #     chmod 600 $HOME/decoded_ssh_key
-      #     ssh-add $HOME/decoded_ssh_key
-          
-      #     # List SSH keys to verify it's added correctly
-      #     ssh-add -L
-          
-      #     # Execute SSH command to deploy
-      #     ssh -vvv -o StrictHostKeyChecking=no -i $HOME/decoded_ssh_key ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} << EOF
-      #       docker login registry.digitalocean.com -u ${{ secrets.DIGITALOCEAN_REGISTRY_USERNAME }} --password-stdin <<< ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-      #       docker pull registry.digitalocean.com/my-container-registry/my-app:latest
-      #       docker stop my-app || true
-      #       docker rm my-app || true
-      #       docker run -d --name my-app -p 80:80 registry.digitalocean.com/my-container-registry/my-app:latest
-      #     EOF
-      #   shell: bash
