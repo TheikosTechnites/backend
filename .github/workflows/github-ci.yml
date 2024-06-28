@@ -82,10 +82,17 @@ jobs:
         with:
           node-version: '17.8.0'
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.16.1'
+          cache: 'npm'
+
       - name: Download build artifact
         uses: actions/download-artifact@v3
         with:
           name: build-artifacts
+          path: .
 
       - name: Run tests
         run: npm run test
