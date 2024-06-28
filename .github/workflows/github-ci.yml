@@ -104,6 +104,10 @@ jobs:
           chmod 600 $HOME/decoded_ssh_key
           eval $(ssh-agent -s)
           ssh-add $HOME/decoded_ssh_key
+          echo "Decoded SSH key:"
+          cat $HOME/decoded_ssh_key
+          echo "SSH keys added to agent:"
+          ssh-add -l
         shell: bash
 
       - name: Deploy to Droplet
