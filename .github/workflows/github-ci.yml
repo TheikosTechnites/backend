@@ -88,7 +88,7 @@ jobs:
         run: npm run test
 
   deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [build, lint, test]
     runs-on: ubuntu-latest
     steps:
@@ -111,7 +111,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: registry.digitalocean.com/nomadiq/my-app:latest
+          tags: registry.digitalocean.com/nomadiq/core-service:latest
 
       - name: Decode SSH Key and Deploy to Droplet
         run: |
@@ -129,12 +129,15 @@ jobs:
           # Write the environment file contents to a file
           echo "${{ secrets.DEV_ENV_FILE }}" > $HOME/.env
           
+          # Transfer the .env file to the remote server
+          scp -o StrictHostKeyChecking=no $HOME/.env ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }}:/home/nomadiq/.env
+
           # Execute SSH command to deploy
           ssh -o StrictHostKeyChecking=no -i $HOME/decoded_ssh_key ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} << EOF
             docker login registry.digitalocean.com -u ${{ secrets.DIGITALOCEAN_REGISTRY_USERNAME }} --password-stdin <<< ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-            docker pull registry.digitalocean.com/nomadiq/my-app:latest
-            docker stop my-app || true
-            docker rm my-app || true
-            docker run -d --name my-app -p 8080:3000 --env-file $HOME/.env registry.digitalocean.com/nomadiq/my-app:latest
+            docker pull registry.digitalocean.com/nomadiq/core-service:latest
+            docker stop core-service || true
+            docker rm core-service || true
+            docker run -d --name core-service -p 8080:3000 --env-file /home/nomadiq/.env registry.digitalocean.com/nomadiq/core-service:latest
           EOF
         shell: bash
