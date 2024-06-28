@@ -81,13 +81,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18.16.1'
-          cache: 'npm'
 
       - name: Download build artifact
         uses: actions/download-artifact@v3
         with:
           name: build-artifacts
-          path: .
       
       - name: Install jest
         run: npm install jest --save-dev
