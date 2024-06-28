@@ -107,13 +107,12 @@ jobs:
         shell: bash
 
       - name: Deploy to Droplet
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.DROPLET_HOST }}
-          username: ${{ secrets.DROPLET_USERNAME }}
-          script: |
+        run: |
+          ssh -o StrictHostKeyChecking=no -i $HOME/decoded_ssh_key ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} << EOF
             docker login registry.digitalocean.com -u ${{ secrets.DIGITALOCEAN_REGISTRY_USERNAME }} --password-stdin <<< ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
             docker pull registry.digitalocean.com/my-container-registry/my-app:latest
             docker stop my-app || true
             docker rm my-app || true
             docker run -d --name my-app -p 80:80 registry.digitalocean.com/my-container-registry/my-app:latest
+          EOF
+        shell: bash
