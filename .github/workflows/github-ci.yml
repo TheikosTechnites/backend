@@ -102,11 +102,11 @@ jobs:
       - name: Deploy to Droplet
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ env.DROPLET_HOST }}
-          username: ${{ env.DROPLET_USERNAME }}
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USERNAME }}
           key: ${{ secrets.SSH_JOHN_NEIL }}
           script: |
-            docker login registry.digitalocean.com -u ${{ env.DIGITALOCEAN_REGISTRY_USERNAME }} --password-stdin <<< ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+            docker login registry.digitalocean.com -u ${{ secrets.DIGITALOCEAN_REGISTRY_USERNAME }} --password-stdin <<< ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
             docker pull registry.digitalocean.com/my-container-registry/my-app:latest
             docker stop my-app || true
             docker rm my-app || true
