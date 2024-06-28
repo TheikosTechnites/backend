@@ -105,6 +105,7 @@ jobs:
           username: ${{ env.DROPLET_USERNAME }}
           key: ${{ secrets.DROPLET_SSH_KEY }}
           script: |
+            echo "Logging in as: ${{ env.DIGITALOCEAN_REGISTRY_USERNAME }}"
             docker login registry.digitalocean.com -u ${{ env.DIGITALOCEAN_REGISTRY_USERNAME }} --password-stdin <<< ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
             docker pull registry.digitalocean.com/my-container-registry/my-app:latest
             docker stop my-app || true
