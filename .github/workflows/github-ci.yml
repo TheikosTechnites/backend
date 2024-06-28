@@ -98,20 +98,20 @@ jobs:
           push: true
           tags: registry.digitalocean.com/nomadiq/my-app:latest
 
-      - name: Decode SSH Key
+      - name: Decode SSH Key and Deploy to Droplet
         run: |
+          # Start the SSH agent and export environment variables
+          eval $(ssh-agent -s)
+          
+          # Add the SSH key to the agent
           echo "${{ secrets.DROPLET_SSH_KEY }}" | base64 --decode > $HOME/decoded_ssh_key
           chmod 600 $HOME/decoded_ssh_key
-          eval $(ssh-agent -s)
           ssh-add $HOME/decoded_ssh_key
-        shell: bash
-      
-      - name: List SSH keys in agent
-        run: ssh-add -L
-        shell: bash
-
-      - name: Deploy to Droplet
-        run: |
+          
+          # List SSH keys to verify it's added correctly
+          ssh-add -L
+          
+          # Execute SSH command to deploy
           ssh -o StrictHostKeyChecking=no -i $HOME/decoded_ssh_key ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} << EOF
             docker login registry.digitalocean.com -u ${{ secrets.DIGITALOCEAN_REGISTRY_USERNAME }} --password-stdin <<< ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
             docker pull registry.digitalocean.com/my-container-registry/my-app:latest
