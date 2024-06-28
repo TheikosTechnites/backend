@@ -132,6 +132,6 @@ jobs:
             docker pull registry.digitalocean.com/nomadiq/my-app:latest
             docker stop my-app || true
             docker rm my-app || true
-            docker run -d --name my-app -p 80:80 registry.digitalocean.com/nomadiq/my-app:latest
+            docker run -d --name my-app -p 8080:3000 registry.digitalocean.com/nomadiq/my-app:latest
           EOF
         shell: bash
