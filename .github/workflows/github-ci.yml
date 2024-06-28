@@ -76,11 +76,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-        
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '17.8.0'
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -93,6 +88,9 @@ jobs:
         with:
           name: build-artifacts
           path: .
+      
+      - name: Install jest
+        run: npm install jest --save-dev
 
       - name: Run tests
         run: npm run test
