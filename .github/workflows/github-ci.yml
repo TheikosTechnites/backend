@@ -99,7 +99,11 @@ jobs:
           tags: registry.digitalocean.com/nomadiq/my-app:latest
 
       - name: Decode SSH Key
-        run: echo "${{ secrets.ENCODED_DROPLET_SSH_KEY }}" | base64 --decode > $HOME/decoded_ssh_key
+        run: |
+          echo "${{ secrets.ENCODED_DROPLET_SSH_KEY }}" | base64 --decode > $HOME/decoded_ssh_key
+          chmod 600 $HOME/decoded_ssh_key
+          eval $(ssh-agent -s)
+          ssh-add $HOME/decoded_ssh_key
         shell: bash
 
       - name: Deploy to Droplet
@@ -107,7 +111,6 @@ jobs:
         with:
           host: ${{ secrets.DROPLET_HOST }}
           username: ${{ secrets.DROPLET_USERNAME }}
-          key: ${{ secrets.DROPLET_SSH_KEY }}
           script: |
             docker login registry.digitalocean.com -u ${{ secrets.DIGITALOCEAN_REGISTRY_USERNAME }} --password-stdin <<< ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
             docker pull registry.digitalocean.com/my-container-registry/my-app:latest
