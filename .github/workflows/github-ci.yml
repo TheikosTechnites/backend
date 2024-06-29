@@ -40,6 +40,7 @@ jobs:
             dist/
             package.json
             yarn.lock
+            node_modules/
 
   lint:
     needs: build
@@ -58,8 +59,8 @@ jobs:
         with:
           name: build-artifacts
 
-      - name: Install ESLint
-        run: npm install eslint --save-dev
+      # - name: Install ESLint
+      #   run: npm install eslint --save-dev
 
       - name: Run lint
         run: npm run lint
@@ -81,8 +82,8 @@ jobs:
         with:
           name: build-artifacts
       
-      - name: Install jest
-        run: npm install jest --save-dev
+      # - name: Install jest
+      #   run: npm install jest --save-dev
 
       - name: Run tests
         run: npm run test
