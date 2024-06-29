@@ -1,4 +1,4 @@
-name: pull-request-ci
+run-name: Deploy to ${{ inputs.deploy_target }}
 
 on:
   push:
