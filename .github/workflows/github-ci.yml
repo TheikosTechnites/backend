@@ -13,26 +13,6 @@ on:
       - main
       - prod
 
-anchors:
-  checkout: &checkout
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-  setup-node: &setup-node
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18.16.1'
-
-  cache-node-modules: &cache-node-modules
-    - name: Cache node modules
-      id: cache-node-modules
-      uses: actions/cache@v3
-      with:
-        path: ~/.npm
-        key: node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          node-modules-${{ runner.os }}-
 
 jobs:
   build:
@@ -140,3 +120,23 @@ jobs:
           EOF
         shell: bash
         
+anchors:
+  checkout: &checkout
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+  setup-node: &setup-node
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.16.1'
+
+  cache-node-modules: &cache-node-modules
+    - name: Cache node modules
+      id: cache-node-modules
+      uses: actions/cache@v3
+      with:
+        path: ~/.npm
+        key: node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          node-modules-${{ runner.os }}-
