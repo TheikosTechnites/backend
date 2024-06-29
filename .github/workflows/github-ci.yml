@@ -1,4 +1,4 @@
-name: CI
+name: Pull-request CI
 
 on:
   push:
@@ -13,6 +13,27 @@ on:
       - main
       - prod
 
+anchors:
+  checkout: &checkout
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+  setup-node: &setup-node
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.16.1'
+
+  cache-node-modules: &cache-node-modules
+    - name: Cache node modules
+      id: cache-node-modules
+      uses: actions/cache@v3
+      with:
+        path: ~/.npm
+        key: node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          node-modules-${{ runner.os }}-
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,43 +45,33 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18.16.1'
-          cache: 'npm'
+
+      - name: Cache node modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: node-modules-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            node-modules-${{ runner.os }}-
 
       - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci
 
       - name: Build project
         run: npm run build
 
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: build-artifacts
-          path: |
-            dist/
-            package.json
-            yarn.lock
-
   lint:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18.16.1'
-
-      - name: Download build artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: build-artifacts
-
-      - name: Install ESLint
-        run: npm install eslint --save-dev
-
+      - <<: *checkout
+      - <<: *setup-node
+      - <<: *cache-node-modules
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
       - name: Run lint
         run: npm run lint
 
@@ -68,22 +79,12 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18.16.1'
-
-      - name: Download build artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: build-artifacts
-      
-      - name: Install jest
-        run: npm install jest --save-dev
-
+      - <<: *checkout
+      - <<: *setup-node
+      - <<: *cache-node-modules
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
       - name: Run tests
         run: npm run test
 
@@ -138,3 +139,4 @@ jobs:
             docker run -d --name my-app -p 8080:3000 --env-file $HOME/.env registry.digitalocean.com/nomadiq/my-app:latest
           EOF
         shell: bash
+        
