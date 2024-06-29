@@ -1,12 +1,17 @@
 run-name: Deploy to ${{ inputs.deploy_target }}
 
 on:
-  workflow_dispatch:
-    inputs:
-      deploy_branch:
-        description: 'Branch to deploy'
-        required: true
-        default: 'main'
+  push:
+    branches:
+      - main
+      - prod
+  pull_request:
+    types:
+      - opened
+      - synchronize
+    branches:
+      - main
+      - prod
 
 jobs:
   build:
