@@ -1,10 +1,6 @@
 run-name: Deploy to ${{ inputs.deploy_target }}
 
 on:
-  push:
-    branches:
-      - main
-      - prod
   pull_request:
     types:
       - opened
