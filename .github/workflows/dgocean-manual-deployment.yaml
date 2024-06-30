@@ -15,17 +15,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
       - name: Set up Docker Build
         uses: docker/setup-buildx-action@v1
-
       - name: Login to DigitalOcean Container Registry
         uses: docker/login-action@v1
         with:
           registry: registry.digitalocean.com/nomadiq
-          username: ${{ secrets.DIGITALOCEAN_REGISTRY_USERNAME }}  # Assuming this is a secret
+          username: ${{ secrets.DIGITALOCEAN_REGISTRY_USERNAME }}
           password: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
@@ -33,24 +30,14 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: registry.digitalocean.com/nomadiq/my-app:latest
-
       - name: Decode SSH Key and Deploy to Droplet
         run: |
-          # Start the SSH agent and export environment variables
           eval $(ssh-agent -s)
-          
-          # Add the SSH key to the agent
           echo "${{ secrets.DROPLET_SSH_KEY }}" | base64 --decode > $HOME/decoded_ssh_key
           chmod 600 $HOME/decoded_ssh_key
           ssh-add $HOME/decoded_ssh_key
-          
-          # List SSH keys to verify it's added correctly
           ssh-add -L
-
-          # Write the environment file contents to a file
           echo "${{ secrets.DEV_ENV_FILE }}" > $HOME/.env
-          
-          # Execute SSH command to deploy
           ssh -o StrictHostKeyChecking=no -i $HOME/decoded_ssh_key ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} << EOF
             docker login registry.digitalocean.com -u ${{ secrets.DIGITALOCEAN_REGISTRY_USERNAME }} --password-stdin <<< ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
             docker pull registry.digitalocean.com/nomadiq/my-app:latest
