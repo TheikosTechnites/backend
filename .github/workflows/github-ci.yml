@@ -127,28 +127,11 @@ jobs:
           ssh-add -L
 
           # Create the directory on the remote server
-          ssh -o StrictHostKeyChecking=no -i $HOME/decoded_ssh_key ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} << 'EOF'
-            # Debugging: Show if /tmp/.env exists and its type
-            echo "Checking if /tmp/.env exists and its type:"
-            ls -ld /tmp/.env || echo "/tmp/.env does not exist"
-
-            # Ensure /tmp/.env is not a directory
-            if [ -d /tmp/.env ]; then
-              echo "/tmp/.env is a directory. Removing..."
-              rm -r /tmp/.env
-            fi
-
-            # Create the directory for the application if it doesn't exist
-            mkdir -p /home/nomadiq
-
-            # Debugging: Confirm actions taken
-            echo "Current state of /tmp/.env:"
-            ls -ld /tmp/.env || echo "/tmp/.env ready for file transfer"
-          EOF
+          ssh -o StrictHostKeyChecking=no -i $HOME/decoded_ssh_key ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} "mkdir -p /home/nomadiq"
 
           # Write the environment file contents to a file
           echo "${{ secrets.DEV_ENV_FILE }}" > $HOME/.env
-
+          
           # Transfer the .env file to the remote server
           scp -o StrictHostKeyChecking=no $HOME/.env ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }}:/tmp/.env
 
@@ -156,13 +139,13 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i $HOME/decoded_ssh_key ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} << EOF
           docker login registry.digitalocean.com -u ${{ secrets.DIGITALOCEAN_REGISTRY_USERNAME }} --password-stdin <<< ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
           docker pull registry.digitalocean.com/nomadiq/core-service:latest
-
+          
           # Check if the container exists before attempting to stop or remove it
           if docker ps -a | grep -q core-service; then
             docker stop core-service
             docker rm core-service
           fi
-
-          # Use --env-file to set environment variables directly from .env file upon container start
+          
+          # Use a Docker volume to ensure the .env file is accessible with correct permissions
           docker run -d --name core-service -p 8080:3000 --env-file /tmp/.env registry.digitalocean.com/nomadiq/core-service:latest
           EOF
