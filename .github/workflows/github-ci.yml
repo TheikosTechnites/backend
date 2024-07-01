@@ -127,13 +127,23 @@ jobs:
           ssh-add -L
 
           # Create the directory on the remote server
-          ssh -o StrictHostKeyChecking=no -i $HOME/decoded_ssh_key ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} << EOF
+          ssh -o StrictHostKeyChecking=no -i $HOME/decoded_ssh_key ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} << 'EOF'
+            # Debugging: Show if /tmp/.env exists and its type
+            echo "Checking if /tmp/.env exists and its type:"
+            ls -ld /tmp/.env || echo "/tmp/.env does not exist"
+
             # Ensure /tmp/.env is not a directory
             if [ -d /tmp/.env ]; then
+              echo "/tmp/.env is a directory. Removing..."
               rm -r /tmp/.env
             fi
 
+            # Create the directory for the application if it doesn't exist
             mkdir -p /home/nomadiq
+
+            # Debugging: Confirm actions taken
+            echo "Current state of /tmp/.env:"
+            ls -ld /tmp/.env || echo "/tmp/.env ready for file transfer"
           EOF
 
           # Write the environment file contents to a file
