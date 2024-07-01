@@ -135,6 +135,9 @@ jobs:
           # Transfer the .env file to the remote server
           scp -o StrictHostKeyChecking=no $HOME/.env ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }}:/tmp/.env
 
+          # Set the correct permissions for the .env file (assuming 'root' is the user Docker runs as)
+          ssh -o StrictHostKeyChecking=no ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} "chmod 644 /tmp/.env"
+
           # Execute SSH command to deploy
           ssh -o StrictHostKeyChecking=no -i $HOME/decoded_ssh_key ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} << EOF
           docker login registry.digitalocean.com -u ${{ secrets.DIGITALOCEAN_REGISTRY_USERNAME }} --password-stdin <<< ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
@@ -149,3 +152,4 @@ jobs:
           # Use a Docker volume to ensure the .env file is accessible with correct permissions
           docker run -d --name core-service -p 8080:3000 --env-file /tmp/.env registry.digitalocean.com/nomadiq/core-service:latest
           EOF
+        shell: bash
