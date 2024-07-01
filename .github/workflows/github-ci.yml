@@ -142,8 +142,13 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i $HOME/decoded_ssh_key ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} << EOF
             docker login registry.digitalocean.com -u ${{ secrets.DIGITALOCEAN_REGISTRY_USERNAME }} --password-stdin <<< ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
             docker pull registry.digitalocean.com/nomadiq/core-service:latest
-            docker stop core-service || true
-            docker rm core-service || true
+            
+            # Check if the container exists before attempting to stop or remove it
+            if docker ps -a | grep -q core-service; then
+              docker stop core-service
+              docker rm core-service
+            fi
+            
             docker run -d --name core-service -p 8080:3000 --env-file /home/nomadiq/.env registry.digitalocean.com/nomadiq/core-service:latest
           EOF
         shell: bash
