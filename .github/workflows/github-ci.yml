@@ -133,10 +133,7 @@ jobs:
           echo "${{ secrets.DEV_ENV_FILE }}" > $HOME/.env
           
           # Transfer the .env file to the remote server
-          scp -o StrictHostKeyChecking=no $HOME/.env ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }}:/home/nomadiq/.env
-
-          # Set the correct permissions for the .env file
-          ssh -o StrictHostKeyChecking=no -i $HOME/decoded_ssh_key ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} "sudo chown ${{ secrets.DROPLET_USERNAME }} /home/nomadiq/.env && chmod 644 /home/nomadiq/.env"
+          scp -o StrictHostKeyChecking=no $HOME/.env ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }}:/tmp/.env
 
           # Execute SSH command to deploy
           ssh -o StrictHostKeyChecking=no -i $HOME/decoded_ssh_key ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} << EOF
@@ -149,6 +146,6 @@ jobs:
               docker rm core-service
             fi
             
-            docker run -d --name core-service -p 8080:3000 --env-file /home/nomadiq/.env registry.digitalocean.com/nomadiq/core-service:latest
+            # Use a Docker volume to ensure the .env file is accessible with correct permissions
+            docker run -d --name core-service -p 8080:3000 -v /tmp/.env:/app/.env registry.digitalocean.com/nomadiq/core-service:latest
           EOF
-        shell: bash
