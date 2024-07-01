@@ -26,6 +26,10 @@ FROM base AS final
 
 ENV NODE_ENV production
 
+# Before switching to user 'node', change ownership of /app to 'node'
+# This ensures 'node' user can write to /app and its subdirectories
+RUN chown -R node:node /app
+
 USER node
 
 COPY package.json .
