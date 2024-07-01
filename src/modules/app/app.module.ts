@@ -17,6 +17,7 @@ import { join } from 'path';
       driver: ApolloDriver,
       playground: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      introspection: true,
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
