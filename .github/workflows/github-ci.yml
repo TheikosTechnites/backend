@@ -147,5 +147,5 @@ jobs:
           fi
           
           # Use a Docker volume to ensure the .env file is accessible with correct permissions
-          docker run -d --name core-service -p 8080:3000 -v /tmp/.env:/src/config/.env registry.digitalocean.com/nomadiq/core-service:latest
+          docker run -d --name core-service -p 8080:3000 --env-file /tmp/.env registry.digitalocean.com/nomadiq/core-service:latest
           EOF
