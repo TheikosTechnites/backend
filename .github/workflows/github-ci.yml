@@ -136,7 +136,7 @@ jobs:
           scp -o StrictHostKeyChecking=no $HOME/.env ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }}:/home/nomadiq/.env
 
           # Set the correct permissions for the .env file
-          ssh -o StrictHostKeyChecking=no -i $HOME/decoded_ssh_key ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} "chmod 644 /home/nomadiq/.env"
+          ssh -o StrictHostKeyChecking=no -i $HOME/decoded_ssh_key ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} "chmod 644 /home/nomadiq/.env && sudo chown root:root /home/nomadiq/.env"
 
           # Execute SSH command to deploy
           ssh -o StrictHostKeyChecking=no -i $HOME/decoded_ssh_key ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} << EOF
